@@ -1,23 +1,60 @@
 <template>
   <transition name="slide">
-    <div class="singer-detail">
-      <p>111444444</p>
-    </div>
+    <music-list :songs="songs" :title="title" :bgImage="bgImage"></music-list>
   </transition>
 </template>
 
 
 <script>
 import {mapGetters} from 'vuex'
-
+import {getSingerDetail} from 'api/singer'
+import {createSong} from 'common/js/song'
+import {ERR_OK} from 'api/config'
+import MusicList from 'components/music-list/music-list'
 export default {
+  data(){
+    return {
+      songs:[]
+    }
+  },
   computed:{
+    title(){
+      return this.singer.name
+    },
+    bgImage(){
+      return this.singer.avatar
+    },
     ...mapGetters([
       'singer'
     ])
   },
-  crated(){
-    console.log("55"+this.singer)
+  components:{MusicList},
+  created(){
+    this._getDetail()
+  },
+  methods:{
+    _getDetail(){
+      if(!this.singer.id){
+        this.$router.push('/singer')
+      }
+      getSingerDetail(this.singer.id).then((res)=>{
+        if(res.code === ERR_OK){
+          this.songs=this._normalizeSongs(res.data.list)
+          console.log(res.data.list)
+          console.log(this.songs)
+        }
+      })
+    },
+    _normalizeSongs(list){
+      let ret=[]
+      list.forEach((item)=>{
+        let {musicData}=item
+        if(musicData.songid&&musicData.albumid){
+          ret.push(createSong(musicData))
+        }
+      })
+      return ret
+    }
   }
 }
 </script>
