@@ -1,7 +1,7 @@
 <template>
   <transition name="slide">
     <div class="singer-detail">
-      <p>111444444</p>
+      <p>{{singer.name}}</p>
     </div>
   </transition>
 </template>
@@ -16,8 +16,8 @@ export default {
       'singer'
     ])
   },
-  crated(){
-    console.log("55"+this.singer)
+  created(){
+    console.log(this.singer)
   }
 }
 </script>
