@@ -71,17 +71,19 @@ module.exports = {
         }
       },
       {
+        test: /\.styl$/,
+  	    loader: 'css-loader!stylus-loader?paths=node_modules/bootstrap-stylus/stylus/',
+        include:['node build/dev-server.js']
+  	  },
+      {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
         loader: 'url-loader',
         options: {
-          limit: 10000,
+          limit: 80000,
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
-      },
-	  {
-        test: /\.styl$/,
-	    loader: 'css-loader!stylus-loader?paths=node_modules/bootstrap-stylus/stylus/'
-	  }
+      }
+
     ]
   },
   node: {

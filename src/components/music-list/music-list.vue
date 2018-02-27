@@ -9,7 +9,7 @@
     </div>
     <scroll :data="songs" class="list" ref="list">
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list @select="selectItem" :songs="songs"></song-list>
       </div>
     </scroll>
   </div>
@@ -17,6 +17,7 @@
 <script>
 import Scroll from 'base/scroll'
 import SongList from 'base/song-list'
+import {mapActions} from 'vuex'
   export default{
     props: {
       bgImage: {
@@ -39,7 +40,16 @@ import SongList from 'base/song-list'
     methods:{
       back(){
         this.$router.push('/singer')
-      }
+      },
+      selectItem(item,index){
+        this.selectPlay({
+          list:this.songs,
+          index
+        })
+      },
+      ...mapActions([
+        'selectPlay'
+      ])
     },
     components:{SongList,Scroll},
     computed:{
