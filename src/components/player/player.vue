@@ -1,12 +1,19 @@
 <template lang="html">
-  <div class="player">
+  <div class="player" v-show="playList.length>0">
+    <transition name="normal"
+                @enter="enter"
+                @after-enter="afterEnter"
+                @leave="leave"
+                @after-leave="leaveEnter"
+    >
     <div class="normal-player" v-show='fullScreen'>
       <div class="background">
-        <img width="100%" height="100%" :src="currentSong.image">
+        <!-- 这里绑定CurrentSong.image会报错 -->
+        <img :src="currentSong.image" width="100%" height="100%" >
       </div>
       <div class="top">
         <div class="back" @click="back()">
-          <!-- <i class="icon-back"></i> -->关闭
+          <i class="icon-back"></i>
         </div>
         <h1 class="title" v-html="currentSong.name"></h1>
         <h1 class="subtitle" v-html="currentSong.singer"></h1>
@@ -19,7 +26,8 @@
             </div>
           </div>
         <div class="playing-lyric-wrapper">
-          <div class="playing-lyric">{{playingLyric}}</div>
+          <!-- playingLyric报错 -->
+          <div class="playing-lyric"></div>
         </div>
         </div>
         <scroll class="middle-r" ref="lyricList">
@@ -61,20 +69,39 @@
         </div>
       </div>
     </div>
-    <div class="mini-player" v-show='!playList'></div>
+  </transition>
+  <transition name="mini">
+    <div class="mini-player" v-show="playList" @click="open">
+      <div class="icon">
+        <img :class="cdCls" width="40" height="40" :src="currentSong.image">
+      </div>
+      <div class="text">
+        <h2 class="name" v-html="currentSong.name"></h2>
+        <p class="desc" v-html="currentSong.singer"></p>
+      </div>
+      <div class="control">
+      </div>
+      <div class="control" @click.stop="showPlaylist">
+        <i class="icon-playist"></i>
+      </div>
+    </div>
+  </transition>
   </div>
 </template>
 
 <script>
 import {mapGetters,mapMutations} from 'vuex'
-
+import Scroll from 'base/scroll'
 export default {
   computed:{
     ...mapGetters([
       'currentSong',
       'fullScreen',
       'playList',
-    ])
+    ]),
+    cdCls(){
+      return this.playing ? 'play':'play pause'
+    }
   },
   methods:{
     ...mapMutations({
@@ -82,7 +109,40 @@ export default {
     }),
     back(){
       this.setFullScreen(false)
+    },
+    open(){
+      this.setFullScreen(true)
+    },
+    enter(el,done){
+      const {x,y,scale}=this._getPosAndScale()
+    },
+    afterEnter(){
+
+    },
+    leave(el,done){
+
+    },
+    afterLeave(){
+
+    },
+    _getPosAndScale(){
+      const targetWidth = 40
+      const paddingLeft = 40
+      const paddingBottom = 30
+      const paddingTop = 80
+      const width = window.innerWidth * 0.8
+      const scale = targetWidth / width
+      const x= -(window.innerWidth / 2 -paddingLeft)
+      const y = window.innerHeight - paddingTop - width / 2 - paddingTop
+      return {
+        x,
+        y,
+        scale
+      }
     }
+  },
+  components:{
+    Scroll
   }
 }
 </script>
@@ -202,7 +262,7 @@ export default {
               color: $color-text
     .bottom
       position: absolute
-      bottom: 50px
+      bottom: 75px
       width: 100%
       .dot-wrapper
         text-align: center
